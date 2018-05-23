@@ -7,7 +7,7 @@
     </div>
     <div class="condition-down">
       <div class="condition-down-items" @click.stop="warpClick">
-        <div class="condition-down-title">区域</div>
+        <div class="condition-down-title">市</div>
         <div  class="condition-down-content">
           <ul>
             <li>
@@ -26,7 +26,7 @@
             </li>
           </ul>
         </div>
-        <div class="condition-down-title">子公司</div>
+        <div class="condition-down-title">县（区）</div>
         <div  class="condition-down-content">
           <ul v-if="!multiple">
             <li>
@@ -86,13 +86,10 @@
   </div>
 </template>
 <script>
-import $ from 'jquery'
-import Helper from '@/helper'
-import Rest from '@/rest'
-import Api from '@/api'
+import util from '@/common/util'
 
 export default {
-  name: 'editPanel',
+  name: 'ConditionOrg',
   data () {
     return {
       regionId: '',
@@ -145,59 +142,30 @@ export default {
       this.companyList = [];
       this.branchList = [];
     },
-    // 获取事业部列表
+    // 获取项目列表
     getRegionList(callback) {
       this.resetInit();
-      var restApi = Api.caseManage.case.region;
-      Rest.get(restApi).done((res)=>{
-        if (Helper.isSuccess(res)) {
-          if (res.data.orgVo) {
-            this.regionList = res.data.orgVo;
-            if(callback) callback();
-          } else {
-            this.regionList = [];
-          }
-        } else {
-          this.regionList = [];
-          this.$Message.error(res.status.msg);
-        }
-      });
+
+      // this.regionList = [{"F_Id" : 1, "F_FullName" : "宜春市", "F_ParentId" : "0"}];
+      this.regionList = [{"id" : 1, "name" : "宜春市", "parentid" : "0"}];
+      if(callback) callback();
     },
-    // 获取事业部列表
+    // 获取子公司列表
     getCompanyList(orgId,callback) {
-      var restApi = Api.caseManage.case.company;
-      var parms = { orgId: orgId }
-      Rest.get(restApi,parms).done((res)=>{
-        if (Helper.isSuccess(res)) {
-          if (res.data.orgVo) {
-            this.companyList = res.data.orgVo;
-            if(callback) callback();
-          } else {
-            this.companyList = [];
-          }
-        } else {
-          this.companyList = [];
-          this.$Message.error(res.status.msg);
-        }
-      });
+
+      this.companyList = [
+        {"id" : 2, "name" : "万载县", "parentid" : "1"},
+        {"id" : 3, "name" : "上高县", "parentid" : "1"}
+      ];
+      if(callback) callback();
     },
     // 获取所属处列表
     getBranchList(orgId,callback) {
-      var restApi = Api.caseManage.case.branch;
-      var parms = { orgId: orgId }
-      Rest.get(restApi,parms).done((res)=>{
-        if (Helper.isSuccess(res)) {
-          if (res.data.orgVo) {
-            this.branchList = res.data.orgVo;
-              if(callback) callback();
-          } else {
-            this.branchList = [];
-          }
-        } else {
-          this.branchList = [];
-          this.$Message.error(res.status.msg);
-        }
-      });
+      this.branchList = [
+        {"id" : 4, "name" : "株潭镇", "parentid" : "2"},
+        {"id" : 5, "name" : "黄矛镇", "parentid" : "2"}
+      ];
+      if(callback) callback();
     },
     // 更多和收起
     handleOpen(list,num,key){
@@ -258,18 +226,18 @@ export default {
       var haveName = false;
       var result = '';
       if(this.regionList && this.regionList.length>0 && this.regionId != '-1'){
-       result = Helper.getName(this.regionList,'id',this.regionId,'name');
+       result = util.getName(this.regionList,'id',this.regionId,'name');
         haveName = true;
       }
       if(this.multiple){
         if(this.companyList && this.companyList.length>0 && this.companyIds.indexOf(-1)<0){
-          result = result+'-'+Helper.getName(this.companyList,'id',this.companyIds[0],'name');
+          result = result+'-'+util.getName(this.companyList,'id',this.companyIds[0],'name');
           if(this.companyIds.length >1) result = result+'...';
           haveName = true;
         }
       }else{
         if(this.companyList && this.companyList.length>0 && this.companyId != '-1'){
-          result = result+'-'+Helper.getName(this.companyList,'id',this.companyId,'name');
+          result = result+'-'+util.getName(this.companyList,'id',this.companyId,'name');
           haveName = true;
         }
       }
@@ -289,144 +257,146 @@ export default {
 }
 </script>
 
-<style lang="sass" scoped>
-  @import "../../assets/styles/install";
-  .condition-warp{
-    display: inline-block;
-    width: 180px;
-    height: 33px;
-    color: #657180;
-    position: relative;
-    line-height: normal;
-    .condition-show{
-      display: block;
-      height: 32px;
-      line-height: 29px;
-      padding-left: 8px;
-      padding-right: 15px;
-      box-sizing: border-box;
-      outline: none;
-      user-select: none;
-      cursor: pointer;
-      position: relative;
-      background-color: #fff;
-      border-radius: 3px;
-      border: 1px solid #d7dde4;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow:ellipsis;
-      .condition-show-result{
+<style rel="stylesheet/scss" lang="scss" scoped>
+@import "../../assets/styles/_install";
 
-      }
+.condition-warp {
+  display: inline-block;
+  width: 180px;
+  height: 40px;
+  color: #657180;
+  position: relative;
+  line-height: normal;
+
+  .condition-show{
+    display: block;
+    height: 40px;
+    line-height: 40px;
+    padding-left: 8px;
+    padding-right: 15px;
+    box-sizing: border-box;
+    outline: none;
+    user-select: none;
+    cursor: pointer;
+    position: relative;
+    background-color: #fff;
+    border-radius: 3px;
+    border: 1px solid #d7dde4;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow:ellipsis;
+    .condition-show-result{
+
     }
-    .condition-down{
-      display: none;
-      position: absolute;
-      top: 33px;
-      left: 0;
-      @include transition(500ms);
-      @include radius(3px);
-      max-height: 480px;
-      width: 630px;
-      overflow: auto;
-      overflow-x: hidden;
-      /*margin: 5px 0;*/
-      padding: 15px;
-      padding-top: 5px;
-      background-color: #fff;
-      box-shadow: 0 1px 6px rgba(0,0,0,.2);
-      z-index: 900;
-      text-align: left;
-      .condition-down-items {
-        .condition-down-title {
-          font-size: 16px;
-          color: #8c8c8c;
-          margin-left: 4px;
-          margin-bottom: 5px;
-          margin-top: 10px;
+  }
+  .condition-down{
+    display: none;
+    position: absolute;
+    top: 40px;
+    left: 0;
+    @include transition(500ms);
+    @include radius(3px);
+    max-height: 480px;
+    width: 630px;
+    overflow: auto;
+    overflow-x: hidden;
+    /*margin: 5px 0;*/
+    padding: 15px;
+    padding-top: 5px;
+    background-color: #fff;
+    box-shadow: 0 1px 6px rgba(0,0,0,.2);
+    z-index: 900;
+    text-align: left;
+    .condition-down-items {
+      .condition-down-title {
+        font-size: 16px;
+        color: #8c8c8c;
+        margin-left: 4px;
+        margin-bottom: 5px;
+        margin-top: 10px;
+      }
+      .condition-down-content{
+        position: relative;
+        .open{
+          cursor: pointer;
+          color: #02b0f0;
+          font-size: 14px;
         }
-        .condition-down-content{
-          position: relative;
-          .open{
-            cursor: pointer;
-            color: #02b0f0;
-            font-size: 14px;
-          }
-        }
-        ul {
-          font-size: 0;
-          width: 625px;
+      }
+      ul {
+        font-size: 0;
+        width: 625px;
+        overflow: hidden;
+        li {
+          font-size: 14px;
+          margin-right: 6px;
+          margin-bottom: 6px;
+          display: inline-block;
+          vertical-align: top;
+          background-color: #f5f5f5;
+          color: #2b3545;
+          height: 32px;
+          line-height: 32px;
+          width: 80px;
+          text-align: center;
+          @include radius(3px);
           overflow: hidden;
-          li {
-            font-size: 14px;
-            margin-right: 6px;
-            margin-bottom: 6px;
-            display: inline-block;
-            vertical-align: top;
-            background-color: #f5f5f5;
-            color: #2b3545;
-            height: 32px;
-            line-height: 32px;
-            width: 80px;
-            text-align: center;
-            @include radius(3px);
+          position: relative;
+          label {
+            display: block;
+            padding: 0 10px;
+            cursor: pointer;
+            @include transition(500ms);
+            max-width: 150px;
             overflow: hidden;
-            position: relative;
-            label {
-              display: block;
-              padding: 0 10px;
-              cursor: pointer;
-              @include transition(500ms);
-              max-width: 150px;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-            }
-            .lable{
-              &:hover{
-                color: #02b0f0;
-              }
-            }
-            .curlable{
-              color: #fff;
-              background-color: #02b0f0;
-            }
-            .condition-down-checkbox {
-              position: absolute;
-              top: 0;
-              left: 0;
-              opacity: 0;
-              visibility: hidden;
-              &:checked+label {
-                color: #fff;
-                background-color: #02b0f0;
-                &:hover {
-                  color: #fff;
-                }
-              }
-              &:hover+label {
-                color: #02b0f0;
-              }
-            }
-            .cur {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .lable{
+            &:hover{
               color: #02b0f0;
             }
           }
+          .curlable{
+            color: #fff;
+            background-color: #02b0f0;
+          }
+          .condition-down-checkbox {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            visibility: hidden;
+            &:checked+label {
+              color: #fff;
+              background-color: #02b0f0;
+              &:hover {
+                color: #fff;
+              }
+            }
+            &:hover+label {
+              color: #02b0f0;
+            }
+          }
+          .cur {
+            color: #02b0f0;
+          }
         }
       }
     }
-    &:hover{
-      .condition-down{
-        display: inline-block;
-      }
-      .ivu-select-arrow{
-        @include rotate(180deg)
-      }
-      .condition-show{
-        border-color: #35c0f3;
-        outline: 0;
-        box-shadow: 0 0 0 2px rgba(2,176,240,.2);
-      }
-    };
   }
+  &:hover{
+    .condition-down{
+      display: inline-block;
+    }
+    .ivu-select-arrow{
+      @include rotate(180deg)
+    }
+    .condition-show{
+      border-color: #35c0f3;
+      outline: 0;
+      box-shadow: 0 0 0 2px rgba(2,176,240,.2);
+    }
+  }
+}
 </style>

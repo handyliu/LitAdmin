@@ -3,7 +3,7 @@
     <!-- 顶部条件与工具栏START -->
     <tool-bar>
       <template slot="left">
-        <el-form :inline="true" :model="filters">
+        <el-form :inline="true" :model="filters" class="reset-form">
           <!-- <el-form-item>
             <el-select
               v-model="selValue"
@@ -31,13 +31,65 @@
               :picker-options="pickerOptions">
             </el-date-picker>
           </el-form-item> -->
+          <el-form-item class="filter-panel">
+            <condition-org
+              ref="ref_conditionOrg"
+              multiple
+              @handleChooseOrgan="handleChooseOrgan">
+            </condition-org>
+          </el-form-item>
+          <!-- 筛选 -->
+          <el-form-item class="filter-panel">
+            <condition-other 
+              ref="ref_conditionfilter"
+              width="400px"
+              :list = 'filterList'
+              @handleChoose = 'handleChooseFilter'>
+            </condition-other>
+          </el-form-item>
+          <!-- 筛选时间 -->
+          <!-- <el-form-item>
+            <el-date-picker
+              v-model="datepickerValue"
+              type="daterange"
+              align="right"
+              unlink-panels
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions"
+              @change="handlerPickerChange">
+            </el-date-picker>
+          </el-form-item> -->
           <el-form-item>
-            <el-input v-model="filters.name" placeholder="书名" @keyup.enter.native="handleSearch"></el-input>
+            <el-input v-model="filters.name" placeholder="关键字" @keyup.enter.native="handleSearch"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" v-on:click="handleSearch">查询</el-button>
           </el-form-item>
         </el-form>
+      </template>
+      <template slot="right">
+        <!-- <el-select class="filter-single" v-model="selListType" placeholder="显示模式">
+          <el-option
+            v-for="item in listTypeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select> -->
+        <span 
+          class="classType" 
+          :class="classType?'active':''"
+          @click="handleChangeClassType(1)">
+          <i class="type_icon type_icon2"></i>
+        </span>
+        <span 
+          class="classType" 
+          :class="classType?'':'active'"
+          @click="handleChangeClassType(0)">
+          <i class="type_icon type_icon1"></i>
+        </span>
       </template>
     </tool-bar>
     <!-- 顶部条件与工具栏END -->
@@ -145,10 +197,13 @@ import util from '../../common/util'
 import API from '../../api/api_book';
 import ToolBar from '../../components/ToolBar'
 import BlockBox from '../../components/BlockBox'
+import ConditionOrg from '../../components/Organizational'
+import ConditionOther from '../../components/FilterOther'
+import Bus from '@/bus'
 
 export default {
   name: 'alarm',
-  components: { ToolBar, BlockBox },
+  components: { ToolBar, BlockBox, ConditionOrg, ConditionOther },
   props: {
     isPager: { //是否分页
       type: Boolean,
@@ -158,6 +213,8 @@ export default {
   data() {
     let self = this
     return {
+      classType: 0, // 列表类型
+      selListType: '1',
       mainstyle: {
         height: '100%'
       },
@@ -249,7 +306,62 @@ export default {
           }
         }]
       },
-      datevalue: ''
+      datevalue: '',
+      filterList:[
+        {
+          'title':'状态',
+          'id': [-1],
+          'name': 'status',
+          'multiple':true,
+          'item':[
+            {'id':-1,'name':'不限'},
+            {'id':0,'name':'案前'},
+            {'id':1,'name':'案中'},
+            {'id':2,'name':'撤场'},
+            {'id':3,'name':'结案'},
+            {'id':5,'name':'尾盘'},
+            {'id':6,'name':'停售'}
+          ]
+        }
+      ],      
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+            picker.$emit('pick', [start, end]);
+          }
+        }]
+      },
+      datepickerValue: '',
+      listTypeOptions: [{
+        value: '1',
+        label: '列表模式'
+      }, {
+        value: '2',
+        label: '四分屏'
+      }, {
+        value: '3',
+        label: '十六分屏'
+      }]
     }
   },
   computed: {
@@ -285,8 +397,18 @@ export default {
     this.markers = markers
   },
   methods: {
+    init() {
+      // 初始化
+      // this.handleChangeClassType(0);
+    },
+    // 切换列表风格
+    handleChangeClassType(type) {
+      var that = this;
+      that.classType = type;
+    },
     handleClick(row) {
       console.log(row);
+      this.routeGo(row.id, '/company/detail')
     },
     filterHandler(value, row, column) {
       const property = column['property'];
@@ -423,6 +545,39 @@ export default {
           that.tabList[i].active = false;
         }
       }
+    },
+    // 区域组件callBack
+    handleChooseOrgan(organObj) {
+      if(organObj.regionId == '-1'){ 
+        this.filters.orgId = '';
+        return;
+      }
+      if(organObj.companyId.length>0){
+        this.filters.orgId = organObj.companyId.join(',');
+      }else{
+        this.filters.orgId = organObj.regionId;
+      }
+    },
+    handleChooseFilter(result){
+      result.map((o)=>{
+        if(o.id.indexOf(-1)>-1){
+          this.filters[o.name] = '';
+        }else{
+          this.filters[o.name] = o.id.join(',');
+        }
+      })
+    },
+    handlerPickerChange(param) {
+      console.log(param);
+    },
+    // 路由跳转
+    routeGo(id, path) {
+      this.$router.push({
+        path: path,
+        query: {
+          "id": id
+        }
+      });
     }
   },
   mounted() {
@@ -439,6 +594,11 @@ export default {
 <style scoped>
 .el-form-item {
   margin-top: 5px;
+}
+
+.filter-panel{
+  display: inline-block;
+  vertical-align: top;
 }
 
 </style>

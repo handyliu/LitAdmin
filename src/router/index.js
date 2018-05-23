@@ -81,7 +81,10 @@ let router = new Router({
       menuShow: true,
       leaf: true, // 只有一个节点
       iconCls: 'iconfont icon-books',
-      children: [{ path: '/company/index', component: CompanyList, name: '企业列表', menuShow: true, meta: { title: '企业列表', icon: 'component', noCache: true }}]
+      children: [
+      { path: '/company/index', component: CompanyList, name: '企业列表', menuShow: true, meta: { title: '企业列表', icon: 'component', noCache: true }},
+      { path: '/company/detail', component: resolve => require(['../views/company/detail.vue'], resolve), name: '企业详情' }
+      ]
     },
     {
       path: '/',

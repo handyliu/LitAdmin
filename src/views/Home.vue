@@ -2,7 +2,7 @@
   <el-row class="container">
     <!--头部-->
     <el-col :span="24" class="topbar-wrap">
-      <div class="topbar-logo topbar-btn">
+      <div class="topbar-logo topbar-btn" v-show="collapsed">
         <a href="/">xxx</a>
       </div>
       <div class="topbar-logos" v-show="!collapsed">
@@ -160,7 +160,7 @@ export default {
     }
     .topbar-logos {
       float: left;
-      width: 120px;
+      width: 180px;
       line-height: 26px;
     }
     .topbar-logo img,
@@ -174,7 +174,6 @@ export default {
       text-align: left;
       width: 200px;
       padding-left: 10px;
-      border-left: 1px solid #000;
     }
     .topbar-account {
       float: right;

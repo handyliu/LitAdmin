@@ -22,27 +22,27 @@ export default {
   data() {
     return {
       products: [{
-          name: '实时交通',
+          name: '实时预警',
           path: 'tranmap',
           active: false
         },
         {
-          name: '能源热点',
+          name: '主机热点',
           path: 'hostmap',
           active: false
         },
         {
-          name: '空气质量',
+          name: '设备类型',
           path: 'aqi',
           active: false
         },
         {
-          name: '园区能耗',
+          name: 'Top10工厂',
           path: 'energy',
           active: false
         },
         {
-          name: '项目分部',
+          name: '工厂分布',
           path: 'map',
           active: false
         }

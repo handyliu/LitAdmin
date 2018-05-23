@@ -18,8 +18,8 @@ export default {
 .filter-warp {
   height: 50px;
   position: relative;
-  padding-left: 20px;    
-  background-color: #f3f3f3;
+  padding-left: 20px;
+  background-color: #f9fafc; /**#f3f3f3**/
   border-bottom: 1px solid #bebebe;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   .condition {
