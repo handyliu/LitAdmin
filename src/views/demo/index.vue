@@ -16,26 +16,32 @@
 </template>
 
 <script>
-import SockJS from 'sockjs-client'
-import Stomp from 'webstomp-client'
+
 export default {
   name: 'home',
   data() {
     return {
       received_messages: [],
       send_message: null,
-      connected: false
+      connected: false,
+      socket: null
     }
   },
   methods: {
+    /**
+     * 发送消息
+     * @return {[type]} [description]
+     */
     send() {
-      console.log('Send message:' + this.send_message)
-      if (this.stompClient && this.stompClient.connected) {
-        this.stompClient.send('/app-receive/from-client', this.send_message, {})
-      }
+      console.log(this.$root.sendSocketMsg('ddss'));
+      // this.$socket.send('some data')
     },
+    /**
+     * 连接 $connect()
+     * @return {[type]} [description]
+     */
     connect() {
-      this.socket = new SockJS('http://localhost:8080/websocket-endpoint')
+      /*this.socket = new SockJS('http://localhost:8080/websocket-endpoint')
       this.stompClient = Stomp.over(this.socket)
       this.stompClient.connect({}, (frame) => {
         this.connected = true
@@ -47,14 +53,28 @@ export default {
       }, (error) => {
         console.log(error)
         this.connected = false
-      })
+      })*/
+      console.log('connected');
+      this.connected = true
+      this.$options.sockets.onmessage = (data) => console.log(data);
+      // delete this.$options.sockets.onmessage
+      
     },
+    /**
+     * 断开连接
+     * @return {[type]} [description]
+     */
     disconnect() {
-      if (this.stompClient) {
-        this.stompClient.disconnect()
+      console.log('disconnect');
+      if (this.connected) {
+        this.$disconnect()
       }
       this.connected = false
     },
+    /**
+     * 检测
+     * @return {[type]} [description]
+     */
     tickleConnection() {
       this.connected ? this.disconnect() : this.connect()
     }
