@@ -25,7 +25,11 @@ export default {
       icon2: require('../../../assets/2.png'),
       icon3: require('../../../assets/3.png'),
       icon4: require('../../../assets/4.png'),
-      icon5: require('../../../assets/5.jpg')
+      icon5: require('../../../assets/5.jpg'),
+      startPoint: {
+        x: 114.423294,
+        y: 27.820952
+      },
     }
   },
   mounted() {
@@ -36,7 +40,7 @@ export default {
     bmap.style.height = ((window.innerHeight) * 0.8) + 'px';
     var map = new BMap.Map("allmap"); // 创建Map实例
     map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
-    map.centerAndZoom(new BMap.Point(121.409992, 31.178243), 15); // 初始化地图,设置中心点坐标和地图级别
+    map.centerAndZoom(new BMap.Point(this.startPoint.x, this.startPoint.y), 15); // 初始化地图,设置中心点坐标和地图级别
     map.setMapStyle({
       styleJson: [{
           'featureType': 'water',
@@ -168,16 +172,15 @@ export default {
 
       ]
     });
-
     var points = [
-      { 'lng': 121.388495, 'lat': 31.171609, 'type': 1 },
-      { 'lng': 121.459785, 'lat': 31.173834, 'type': 2 },
-      { 'lng': 121.423853, 'lat': 31.167036, 'type': 3 },
-      { 'lng': 121.426584, 'lat': 31.18335, 'type': 4 },
-      { 'lng': 121.409192, 'lat': 31.173339, 'type': 1 },
-      { 'lng': 121.436788, 'lat': 31.167901, 'type': 4 },
-      { 'lng': 121.404737, 'lat': 31.161969, 'type': 4 },
-      { 'lng': 121.389358, 'lat': 31.182855, 'type': 2 }
+      { 'lng': 114.433894, 'lat': 27.831334, 'type': 1 },
+      { 'lng': 114.433894, 'lat': 27.831334, 'type': 2 },
+      { 'lng': 114.338458, 'lat': 27.772028, 'type': 3 },
+      { 'lng': 114.090669, 'lat': 28.111318, 'type': 4 },
+      { 'lng': 114.314024, 'lat': 27.69401, 'type': 1 },
+      { 'lng': 114.403711, 'lat': 27.919722, 'type': 4 },
+      { 'lng': 114.449417, 'lat': 28.110808, 'type': 4 },
+      { 'lng': 114.175757, 'lat': 28.054207, 'type': 2 }
     ];
     addMarker(points);
 

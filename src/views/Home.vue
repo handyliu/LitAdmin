@@ -3,13 +3,13 @@
     <!--头部-->
     <el-col :span="24" class="topbar-wrap">
       <div class="topbar-logo topbar-btn" v-show="collapsed">
-        <a href="/">xxx</a>
+        <a href="/">LOGO</a>
       </div>
       <div class="topbar-logos" v-show="!collapsed">
-        <a href="/">xxx</a>
+        <a href="/">LOGO</a>
       </div>
       <div class="topbar-title">
-        <span style="font-size: 18px;color: #fff;">后台管理</span>
+        <span style="font-size: 18px;color: #fff;">接警中心（可视化版）</span>
       </div>
       <div class="topbar-account topbar-btn">
         <el-dropdown trigger="click">
@@ -25,6 +25,9 @@
             <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
+        <div class="topbar-toggle">
+          <a class="toggle-link"  @click="asideToggle">&#9776;</a>
+        </div>
       </div>
     </el-col>
     <!--中间-->
@@ -60,6 +63,7 @@
             </transition>
           </el-col>
         </div>
+        <AppAside/>
       </section>
     </el-col>
   </el-row>
@@ -67,9 +71,13 @@
 <script>
 import { bus } from '../bus.js'
 import API from '../api/api_user';
+import AppAside from '../components/Aside'
 
 export default {
   name: 'home',
+  components: {
+    AppAside
+  },
   created() {
     bus.$on('setNickName', (text) => {
       this.nickname = text;
@@ -121,6 +129,11 @@ export default {
           that.$message.error({ showClose: true, message: '请求出现异常', duration: 2000 });
         });
       }).catch(() => {});
+    },
+    // 展示报警栏
+    asideToggle (e) {
+      e.preventDefault()
+      document.body.classList.toggle('aside-menu-hidden')
     }
   },
   mounted() {
@@ -129,6 +142,7 @@ export default {
       user = JSON.parse(user);
       this.nickname = user.nickname || '';
     }
+    document.body.classList.toggle('aside-menu-hidden')
   }
 }
 
@@ -260,6 +274,33 @@ export default {
     .content-wrapper {
       background-color: #fff;
       box-sizing: border-box;
+    }
+  }
+  .topbar-toggle {
+    float: right;
+    width: 50px;
+    margin: 0!important;
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+    .toggle-link {
+      padding-top: 0;
+      padding-bottom: 0;
+      border: 0;
+      background: 0;
+      padding-right: 0;
+      padding-left: 0;
+      cursor: pointer;
+      display: inline-block;
+      font-size: 1.25rem;
+      line-height: 1;
+      color: #2d8cf0;
+      text-decoration: none;
+      outline: 0;
+      transition: color .2s ease;
+      &:hover{color:#57a3f3}
+      &:active{color:#2b85e4}
+      &:active,&:hover{outline:0;text-decoration:none}
     }
   }
 }

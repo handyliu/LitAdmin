@@ -8,8 +8,8 @@ export default {
   data() {
     return {
       startPoint: {
-        x: 121.409992,
-        y: 31.178243
+        x: 114.423294,
+        y: 27.820952
       },
       zoom: 15,
       styleJson: {
@@ -149,7 +149,7 @@ export default {
     // 百度地图API功能
     var map = new BMap.Map("tranmap"); // 创建Map实例
     map.centerAndZoom(new BMap.Point(this.startPoint.x, this.startPoint.y), this.zoom); // 初始化地图,设置中心点坐标和地图级别
-    map.setCurrentCity("上海"); // 设置地图显示的城市 此项是必须设置的
+    map.setCurrentCity("宜春市"); // 设置地图显示的城市 此项是必须设置的
     map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
     map.setMapStyle(this.styleJson) //地图样式
     var ctrl = new BMapLib.TrafficControl({

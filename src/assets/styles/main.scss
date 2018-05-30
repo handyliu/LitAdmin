@@ -259,4 +259,45 @@ a {
     margin: 7px 0 15px 0;
   }
 }
-    
+/* 右侧报警信息栏 */
+.aside-menu {
+  position: fixed;
+  z-index: 900;
+  width: 250px;
+  height: 100%;
+  color: #263238;
+  background: #fbfbfc;
+  border-left: 1px solid #cfd8dc;
+  right: 0;
+  flex: 0 0 250px;
+  border-top: none;
+  box-shadow: -4px 0px 5px rgba(0, 0, 0, 0.2);
+  transition: margin-left .25s, margin-right .25s, width .25s, flex .25s;
+  .header {
+    height: 40px;
+    font-weight: normal;
+    font-size: 14px;
+    color: #4f4f4f;
+    line-height: 40px;
+    padding: 0 20px;
+    border-bottom:1px solid #eaeaea;
+    overflow: hidden;
+    background-color: #fbfbfc;
+  }
+  .aside-options {
+    overflow-y: auto;
+    padding-bottom: 1px;
+    height: calc(100% - 110px);
+  }
+}
+
+.mt-4 {
+  margin-top: 0.5rem!important;
+}
+.px-4 {
+  padding-right: 0.5rem!important;
+  padding-left: 0.5rem!important;
+}
+.aside-menu-hidden .aside-menu{ 
+  margin-right: -300px;
+}
